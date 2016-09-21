@@ -24,14 +24,14 @@
 package com.redhat.middleware.jdg.visualizer.internal;
 
 import java.lang.reflect.Field;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.enterprise.inject.Alternative;
 
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.impl.ConfigurationProperties;
-
-import com.redhat.middleware.jdg.visualizer.poller.jdg.JdgJmxCacheNamesPollerManager;
+import org.infinispan.client.hotrod.configuration.Configuration;
+import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 
 /**
  * 
@@ -41,13 +41,11 @@ import com.redhat.middleware.jdg.visualizer.poller.jdg.JdgJmxCacheNamesPollerMan
 @Alternative
 public class VisualizerRemoteCacheManager extends RemoteCacheManager {
 	public static final String TRANSPORT_FACTORY = "com.redhat.middleware.jdg.visualizer.internal.VisualizerTcpTransportFactory";
-	
-	
 	private ServersRegistry registry;
 	private PingThread pingThread;
 
 	public VisualizerRemoteCacheManager() {
-		super(getCacheProperties());
+		super(getCacheConfiguration());
 	}
 	
 	public ServersRegistry getRegistry() {
@@ -92,9 +90,26 @@ public class VisualizerRemoteCacheManager extends RemoteCacheManager {
 
 	
 	public static Properties getCacheProperties() {
+
 		Properties props = new Properties();
 		props.setProperty("infinispan.client.hotrod.server_list", System.getProperty("jdg.visualizer.serverList"));
 		props.setProperty("infinispan.client.hotrod.transport_factory", TRANSPORT_FACTORY);
+		
+		Enumeration<?> e = props.propertyNames();
+		while (e.hasMoreElements()){
+			String key = (String) e.nextElement();
+			System.out.println(key + " -- " + props.getProperty(key));
+		}
 		return props;
+	}
+	
+	public static Configuration getCacheConfiguration() {
+		ConfigurationBuilder builder = new ConfigurationBuilder();
+		Properties props = getCacheProperties();
+		builder.withProperties(props);
+
+		Configuration config = builder.build();
+
+		return config;
 	}
 }

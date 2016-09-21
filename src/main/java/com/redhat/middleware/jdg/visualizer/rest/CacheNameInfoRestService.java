@@ -50,14 +50,17 @@ public class CacheNameInfoRestService {
 	@GET
 	@Produces("application/json")
 	public Set<String> getAllNodeInfo() throws Exception {
+		
+		System.out.println("getting names: ");
 		Set<String> names = new HashSet<String>();
 		Collection<CacheNameInfo> infos = manager.getAllInfos();
+		
 		for (CacheNameInfo info : infos) {
 			if (info.getNames() != null) {
 				names.addAll(Arrays.asList(info.getNames()));
 			}
 		}
-		
+
 		return names;
 	}
 }

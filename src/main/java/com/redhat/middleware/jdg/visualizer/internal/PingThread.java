@@ -23,10 +23,15 @@
 
 package com.redhat.middleware.jdg.visualizer.internal;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.ServerStatistics;
 import org.infinispan.client.hotrod.exceptions.RemoteCacheManagerNotStartedException;
 
 /**
@@ -42,6 +47,7 @@ import org.infinispan.client.hotrod.exceptions.RemoteCacheManagerNotStartedExcep
  */
 public class PingThread extends Thread {
 	private Logger logger = Logger.getLogger(PingThread.class.getName());
+
 	private static final long DEFAULT_REFRESH_RATE = 2000L;
 
 	private volatile boolean running;
@@ -68,7 +74,23 @@ public class PingThread extends Thread {
 		running = true;
 		while (running) {
 			try {
-				cacheManager.getCache().stats();
+
+				logger.log(Level.FINE, " getCache(labCache): "+cacheManager.getCache("labCache"));
+
+				ServerStatistics stats = cacheManager.getCache("labCache").stats();
+				
+				if (stats != null && logger.isLoggable(Level.FINE)) {
+					logger.log(Level.FINE, "stats(): "+stats.getStatsMap().values());
+					Set<Map.Entry<String,String>>entrySet = stats.getStatsMap().entrySet();
+					
+					for(Map.Entry<String, String> entry : entrySet){
+						String value = entry.getValue();
+						String key = entry.getKey();
+						logger.log(Level.FINE, "STATS:\t["+key+","+value+"]");
+					}
+
+				}
+
 			} catch (IllegalStateException e) {
 				logger.log(Level.SEVERE, "illegal state exception, aborting", e);
 				abort();
@@ -83,6 +105,11 @@ public class PingThread extends Thread {
 			} catch (InterruptedException e) {
 			}
 		}
+	}
+	 
+	public void testCache(RemoteCache cache, String name) {
+		logger.log(Level.FINE, (name+": size() [" +cache.size() + "]"));
+
 	}
 
 	public long getRefreshRate() {

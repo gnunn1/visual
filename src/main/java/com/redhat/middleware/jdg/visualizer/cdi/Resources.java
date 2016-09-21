@@ -23,6 +23,7 @@
 
 package com.redhat.middleware.jdg.visualizer.cdi;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -33,6 +34,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+import com.redhat.middleware.jdg.visualizer.internal.PingThread;
 import com.redhat.middleware.jdg.visualizer.internal.VisualizerRemoteCacheManager;
 import com.redhat.middleware.jdg.visualizer.poller.PollerManager;
 import com.redhat.middleware.jdg.visualizer.poller.jdg.JdgJmxCacheNamesPollerManager;
@@ -58,11 +60,12 @@ import com.redhat.middleware.jdg.visualizer.rest.NodeInfo;
  * @author <a href="mailto:rtsang@redhat.com">Ray Tsang</a>
  */
 public class Resources {
-   private String refreshRate = System.getProperty("jdg.visualizer.refreshRate", "2000");
-	private String jmxUsername = System.getProperty("jdg.visualizer.jmxUser", "admin");
-	private String jmxPassword = System.getProperty("jdg.visualizer.jmxPass", "jboss");
+	private Logger logger = Logger.getLogger(Resources.class.getName());
+	private String refreshRate = System.getProperty("jdg.visualizer.refreshRate", "2001");
+	private String jmxUsername = System.getProperty("jdg.visualizer.jmxUser", "admin1");
+	private String jmxPassword = System.getProperty("jdg.visualizer.jmxPass", "password1");
 	private int jmxHotrodPortOffset = Integer.parseInt(System.getProperty("jdg.visualizer.jmxPortOffset", "1223"));
-	
+
 	@Produces
 	public Logger produceLog(InjectionPoint injectionPoint) {
 		return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
@@ -87,6 +90,8 @@ public class Resources {
 		manager.setJmxHotrodPortOffset(jmxHotrodPortOffset);
 		manager.setRefreshRate(Long.valueOf(refreshRate));
 
+		dumpProperties();
+
 		return manager;
 	}
 
@@ -102,14 +107,23 @@ public class Resources {
 
 		manager.init();
 
+		dumpProperties();
+
 		return manager;
 	}
 
 	public void destroyPollerManager(@Disposes PollerManager<CacheNameInfo> pollerManager) {
 		pollerManager.destroy();
 	}
-	
+
 	public void destroyCacheManager(@Disposes VisualizerRemoteCacheManager cacheManager) {
 		cacheManager.stop();
+	}
+
+	public void dumpProperties() {
+		logger.log(Level.INFO,"-----------------------------------JmxUsername: [" + jmxUsername + "]");
+		logger.log(Level.INFO,"-----------------------------------JmxPassword: [" + jmxPassword + "]");
+		logger.log(Level.INFO,"-----------------------------------JmxHotrodPortOffset: [" + jmxHotrodPortOffset + "]");
+		logger.log(Level.INFO,"-----------------------------------RefreshRate: [" + refreshRate + "]");
 	}
 }

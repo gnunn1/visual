@@ -37,5 +37,20 @@ public class CacheNameInfo {
 	public void setNames(String[] names) {
 		this.names = names;
 	}
-	
+
+	public String toString() {
+		StringBuffer buff = new StringBuffer(this.getClass().getName());
+
+		if (names != null) {
+			buff.append("\nContains [" + names.length + "] entries");
+			for (int i = 0; i < names.length; i++) {
+				buff.append("\n name[" + i + "] " + names[i]);
+			}
+		}
+		else {
+           buff.append("\nContains [0] entries");
+		}
+		return buff.toString();
+	}
+
 }

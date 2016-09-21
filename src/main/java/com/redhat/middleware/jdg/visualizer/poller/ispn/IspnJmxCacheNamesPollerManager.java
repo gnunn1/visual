@@ -46,8 +46,16 @@ public class IspnJmxCacheNamesPollerManager extends JmxCacheNamesPollerManager {
 			throws MalformedURLException {
 		InetSocketAddress isa = (InetSocketAddress) address;		
 		String host = isa.getAddress().getHostAddress();
-		int port = isa.getPort() - getJmxHotrodPortOffset();				
-		return new JMXServiceURL("service:jmx:remoting-jmx://" + host + ":" + port);
+		int port = isa.getPort() - getJmxHotrodPortOffset();
+		//TODO
+		System.out.println("-----------------------------------------------");
+		System.out.println("-----------------------------------------------");
+		System.out.println("isa.getPort: ["+isa.getPort()+","+getJmxHotrodPortOffset()+"]");
+		System.out.println("-----------------------------------------------");
+		System.out.println("-----------------------------------------------");
+		return new JMXServiceURL("service:jmx:remote+http://" + host + ":" + port);
+		//TODO remove
+		//return new JMXServiceURL("service:jmx:remoting-jmx://" + host + ":" + port);
 	}
 
 	@Override
