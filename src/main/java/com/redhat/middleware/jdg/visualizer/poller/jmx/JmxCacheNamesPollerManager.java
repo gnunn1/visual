@@ -47,7 +47,8 @@ public abstract class JmxCacheNamesPollerManager extends JmxPollerManager<CacheN
 
 	@Override
 	protected CacheNameInfo createNewInfo(String id, SocketAddress addr) {
-		return new CacheNameInfo();
+		CacheNameInfo info = new CacheNameInfo();
+		return info;
 	}
 
 }

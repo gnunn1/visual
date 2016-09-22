@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.SocketAddress;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.management.remote.JMXServiceURL;
 
@@ -36,6 +38,7 @@ import com.redhat.middleware.jdg.visualizer.rest.CacheNameInfo;
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
 public class JdgJmxCacheNamesPollerManager extends JmxCacheNamesPollerManager {
+	private Logger logger = Logger.getLogger(JdgJmxCacheNamesPollerManager.class.getName());
 
 	public JdgJmxCacheNamesPollerManager(VisualizerRemoteCacheManager cacheManager) {
 		super(cacheManager);
@@ -47,7 +50,22 @@ public class JdgJmxCacheNamesPollerManager extends JmxCacheNamesPollerManager {
 		InetSocketAddress isa = (InetSocketAddress) address;
 		String host = isa.getAddress().getHostAddress();
 		int port = isa.getPort() - getJmxHotrodPortOffset();
-		return new JMXServiceURL("service:jmx:remoting-jmx://" + host + ":" + port);
+		// TODO
+		// currently we need to use the jdg client libraries which are included in the war
+		// WEB-INF/lib to allow the remote+http access via port 9991
+		// Is that the best way - ???
+		//return new JMXServiceURL("service:jmx:remoting-jmx://" + host + ":" + port);
+		//
+		
+		port=9991;
+		
+		String serviceURL = "service:jmx:remote+http://"+ host + ":" + port;
+
+		logger.log(Level.INFO,"Pre-JDG 7.0 -- isa.getPort: ["+isa.getPort()+","+getJmxHotrodPortOffset()+"]");
+		logger.log(Level.INFO,"currently using: "+serviceURL);
+
+		return new JMXServiceURL(serviceURL);
+
 	}
 
 	@Override

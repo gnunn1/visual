@@ -91,6 +91,7 @@ public abstract class PollerManager<T> {
 	abstract protected T createNewInfo(String id, SocketAddress addr);
 
 	protected void updateClusterList(Collection<SocketAddress> addrs) {
+
 		Set<SocketAddress> pollersToStop = new HashSet<SocketAddress>();
 		pollersToStop.addAll(pollers.keySet());
 
@@ -123,7 +124,8 @@ public abstract class PollerManager<T> {
 	}
 	
 	public Collection<T> getAllInfos() {
-		//updateClusterList();
+		//TODO was commented out??
+		updateClusterList();
 		return infos.values();
 	}
 	

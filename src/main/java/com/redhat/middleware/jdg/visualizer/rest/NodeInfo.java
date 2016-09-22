@@ -44,7 +44,7 @@ public class NodeInfo {
 
     @Override
     public String toString() {
-        return "(" + name + "|" + color + "|" + count + ")";
+        return "(" + id +"|"+ name + "|" + color + "|" + count + ")";
     }
 
     public int getColor() {

@@ -38,7 +38,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import org.infinispan.api.BasicCache;
+import org.infinispan.commons.api.BasicCache;
 
 import com.redhat.middleware.jdg.visualizer.cdi.Resources;
 import com.redhat.middleware.jdg.visualizer.internal.VisualizerRemoteCacheManager;

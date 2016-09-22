@@ -27,9 +27,12 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.SocketAddress;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.management.remote.JMXServiceURL;
 
+import com.redhat.middleware.jdg.visualizer.cdi.Resources;
 import com.redhat.middleware.jdg.visualizer.internal.VisualizerRemoteCacheManager;
 import com.redhat.middleware.jdg.visualizer.poller.CacheEntriesPollerThread;
 import com.redhat.middleware.jdg.visualizer.poller.jmx.JmxCacheEntriesPoller;
@@ -42,6 +45,7 @@ import com.redhat.middleware.jdg.visualizer.rest.NodeInfo;
  *
  */
 public class JdgJmxCacheEntriesPollerManager extends JmxCacheEntriesPollerManager {
+	private Logger logger = Logger.getLogger(JdgJmxCacheEntriesPollerManager.class.getName());
 
 	public JdgJmxCacheEntriesPollerManager(VisualizerRemoteCacheManager cacheManager) {
 		super(cacheManager);
@@ -53,7 +57,16 @@ public class JdgJmxCacheEntriesPollerManager extends JmxCacheEntriesPollerManage
 		InetSocketAddress isa = (InetSocketAddress) address;
 		String host = isa.getAddress().getHostAddress();
 		int port = isa.getPort() - getJmxHotrodPortOffset();
-		return new JMXServiceURL("service:jmx:remoting-jmx://" + host + ":" + port);
+		//previous impl
+		//return new JMXServiceURL("service:jmx:remoting-jmx://" + host + ":" + port);
+		// TODO - should port be passed in?
+		port = 9991;
+		String jmxURLString="service:jmx:remote+http://" + host + ":" + port;
+		logger.log(Level.INFO,"isa.getPort: ["+isa.getPort()+","+getJmxHotrodPortOffset()+"]");
+		logger.log(Level.INFO,"REAL JMX URL: "+jmxURLString);
+
+
+		return new JMXServiceURL(jmxURLString);
 	}
 
 	@Override
