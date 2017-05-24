@@ -25,6 +25,9 @@ package com.redhat.middleware.jdg.visualizer.internal;
 
 import java.net.SocketAddress;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * 
@@ -33,6 +36,7 @@ import java.util.Collection;
  */
 public class VisualizerTcpTransportFactory extends
 		org.infinispan.client.hotrod.impl.transport.tcp.TcpTransportFactory {
+	private Logger logger = Logger.getLogger(VisualizerTcpTransportFactory.class.getName());
 	
 	private ServersRegistry registry;
 
@@ -52,6 +56,16 @@ public class VisualizerTcpTransportFactory extends
 	}
 	
 	protected void updateServerRegistry() {
-		registry.updateServers(getServers());
+		if (registry == null) {
+			logger.log(Level.WARNING, "Registry has not been set");
+			return;
+		} 
+		Collection<SocketAddress> servers = getServers();
+		if (servers != null) {
+			registry.updateServers(servers);
+			logger.log(Level.INFO, "Updating server succeeded");
+		} else {
+			logger.log(Level.WARNING, "Updating server registry failed, getServers() returned null");
+		}
 	}
 }
